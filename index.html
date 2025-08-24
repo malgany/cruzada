@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cruzada • OnePage (Canvas + WordPlacer)</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Cruzada (30×30) • OnePage com Canvas + <span style="color:var(--accent)">WordPlacer</span></h1>
+  </header>
+
+  <div class="wrap">
+    <!-- Painel esquerdo: controles -->
+    <section class="panel" id="controls">
+      <h2>Configurações</h2>
+
+      <div class="row">
+        <label for="gridSize">Tamanho do grid</label>
+        <input type="number" id="gridSize" value="30" min="5" max="80" />
+      </div>
+
+      <div class="two">
+        <div class="row">
+          <label for="minWords">Mín. palavras</label>
+          <input type="number" id="minWords" value="2" min="1" max="20" />
+        </div>
+        <div class="row">
+          <label for="maxWords">Máx. palavras</label>
+          <input type="number" id="maxWords" value="5" min="1" max="50" />
+        </div>
+      </div>
+
+      <div class="two">
+        <div class="row">
+          <label for="cellSize">Tamanho da célula (px)</label>
+          <input type="number" id="cellSize" value="24" min="12" max="40" />
+        </div>
+        <div class="row">
+          <label for="fontScale">Fonte (%)</label>
+          <input type="number" id="fontScale" value="70" min="40" max="100" />
+        </div>
+      </div>
+
+      <div class="row">
+        <label for="seed">Seed (opcional)</label>
+        <input type="text" id="seed" placeholder="Ex.: 12345" />
+      </div>
+
+      <div class="row">
+        <label for="dictFile">dicionario.json</label>
+        <input type="file" id="dictFile" accept="application/json" />
+      </div>
+
+      <div class="row">
+        <label for="dictPaste">Colar JSON (opcional)</label>
+        <textarea id="dictPaste" rows="4" placeholder='["casa","livro","sol"] ou {"words":["..."]}'></textarea>
+      </div>
+
+      <div class="row" style="justify-content:space-between">
+        <button id="btnGenerate">Gerar cruzada</button>
+        <button id="btnReset" class="secondary">Limpar</button>
+      </div>
+
+      <div class="row help">Dica: a <strong>primeira palavra</strong> fica com a <em>letra do meio</em> no centro do grid (para pares, usamos o índice <code>Math.floor((len-1)/2)</code>). A orientação alterna entre cada palavra.</div>
+    </section>
+
+    <!-- Painel direito: canvas + logs -->
+    <section class="grid-wrap">
+      <div class="panel" style="flex:1; display:flex; flex-direction:column; gap:10px;">
+        <h2>Canvas</h2>
+        <canvas id="board" width="720" height="720"></canvas>
+      </div>
+      <div class="panel" style="width:380px; display:flex; flex-direction:column; gap:10px;">
+        <h2>Resultado</h2>
+        <div id="summary" class="list"></div>
+        <h2>Logs</h2>
+        <div id="logs" class="log" style="height:280px; overflow:auto"></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="footer">
+    Esta página foi gerada para testes no ChatGPT: HTML único com JS e Canvas. Suporta carregar <code>dicionario.json</code> (array simples <em>ou</em> objeto <code>{words:[...]}</code>), seed, e ajustes do grid.
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>
