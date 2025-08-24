@@ -318,6 +318,9 @@
       };
       const cfgToggle = document.getElementById('cfgToggle');
       const configPanel = document.getElementById('configPanel');
+      const helpBtn = document.getElementById('helpBtn');
+      const helpModal = document.getElementById('helpModal');
+      const helpOverlay = document.getElementById('helpOverlay');
   
       const defaultDict = ["casa","computador","livro","sol","mesa","janela","porta","carro","amigo","floresta","rio","luz","tempo","caminho","sorriso","brasil","noite","tarde","manhã","cidade","praia","montanha","vila","cachorro","gato","festa","musica","vento","chuva","neve"];
   
@@ -406,6 +409,15 @@
       els.btnReset.addEventListener('click', resetAll);
       cfgToggle.addEventListener('click', () => {
         configPanel.classList.toggle('open');
+      });
+      helpBtn.addEventListener('click', () => {
+        const show = !helpModal.classList.contains('show');
+        helpModal.classList.toggle('show', show);
+        helpOverlay.classList.toggle('show', show);
+      });
+      helpOverlay.addEventListener('click', () => {
+        helpModal.classList.remove('show');
+        helpOverlay.classList.remove('show');
       });
 
       // Render inicial
