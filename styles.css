@@ -14,7 +14,7 @@ body{
   color:var(--ink);
 }
 .wrap{padding:16px;}
-.grid-wrap{display:flex; justify-content:center;}
+.grid-wrap{display:flex; justify-content:center; position:relative;}
 button{
   appearance:none;
   border:0;
@@ -31,6 +31,23 @@ canvas{
   border:1px solid #1f2937;
   border-radius:16px;
   image-rendering:pixelated;
+}
+#gridInputs{
+  position:absolute;
+  top:0;
+  left:0;
+  display:grid;
+}
+.cell-input{
+  width:var(--cellSize);
+  height:var(--cellSize);
+  text-align:center;
+  border:1px solid transparent;
+  background:transparent;
+  color:var(--ink);
+  font-size:calc(var(--cellSize)*0.6);
+  padding:0;
+  margin:0;
 }
 #startScreen{
   position:fixed;

@@ -362,6 +362,7 @@
       // ================================================================
         const els = {
           canvas: document.getElementById('board'),
+          gridInputs: document.getElementById('gridInputs'),
           startScreen: document.getElementById('startScreen'),
           startBtn: document.getElementById('startBtn'),
           helpBtn: document.getElementById('helpBtn'),
@@ -372,6 +373,87 @@
       const defaultDict = ["casa","computador","livro","sol","mesa","janela","porta","carro","amigo","floresta","rio","luz","tempo","caminho","sorriso","brasil","noite","tarde","manhã","cidade","praia","montanha","vila","cachorro","gato","festa","musica","vento","chuva","neve"];
   
       let placer = null;
+      const cellInputs = new Map();
+      let activeOrientation = null;
+
+      function moveFocus(row, col, dr, dc){
+        const key = `${row+dr}-${col+dc}`;
+        const el = cellInputs.get(key);
+        if(el) el.focus();
+      }
+
+      function handleFocus(e){
+        const row = parseInt(e.target.dataset.row,10);
+        const col = parseInt(e.target.dataset.col,10);
+        const w = placer.placed.find(word => word.positions.some(p=>p.row===row && p.col===col));
+        activeOrientation = w ? w.orientation : null;
+      }
+
+      function handleInput(e){
+        let val = e.target.value.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ]/g, '');
+        val = val.toLocaleUpperCase('pt-BR');
+        e.target.value = val;
+        const row = parseInt(e.target.dataset.row,10);
+        const col = parseInt(e.target.dataset.col,10);
+        if(val){
+          if(activeOrientation==='horizontal') moveFocus(row, col, 0, 1);
+          else if(activeOrientation==='vertical') moveFocus(row, col, 1, 0);
+        }
+      }
+
+      function handleKeyDown(e){
+        const row = parseInt(e.target.dataset.row,10);
+        const col = parseInt(e.target.dataset.col,10);
+        switch(e.key){
+          case 'ArrowRight':
+            activeOrientation='horizontal';
+            moveFocus(row, col, 0, 1);
+            e.preventDefault();
+            break;
+          case 'ArrowLeft':
+            activeOrientation='horizontal';
+            moveFocus(row, col, 0, -1);
+            e.preventDefault();
+            break;
+          case 'ArrowDown':
+            activeOrientation='vertical';
+            moveFocus(row, col, 1, 0);
+            e.preventDefault();
+            break;
+          case 'ArrowUp':
+            activeOrientation='vertical';
+            moveFocus(row, col, -1, 0);
+            e.preventDefault();
+            break;
+        }
+      }
+
+      function buildInputs(cellSize){
+        const container = els.gridInputs;
+        container.innerHTML = '';
+        cellInputs.clear();
+        container.style.setProperty('--cellSize', `${cellSize}px`);
+        container.style.width = `${placer.gridSize * cellSize}px`;
+        container.style.height = `${placer.gridSize * cellSize}px`;
+        container.style.gridTemplateColumns = `repeat(${placer.gridSize}, var(--cellSize))`;
+        container.style.gridTemplateRows = `repeat(${placer.gridSize}, var(--cellSize))`;
+        placer.placed.forEach(word => {
+          word.positions.forEach(pos => {
+            const key = `${pos.row}-${pos.col}`;
+            if(cellInputs.has(key)) return;
+            const inp = document.createElement('input');
+            inp.maxLength = 1;
+            inp.className = 'cell-input';
+            inp.dataset.row = pos.row;
+            inp.dataset.col = pos.col;
+            inp.addEventListener('focus', handleFocus);
+            inp.addEventListener('input', handleInput);
+            inp.addEventListener('keydown', handleKeyDown);
+            container.appendChild(inp);
+            cellInputs.set(key, inp);
+          });
+        });
+      }
   
       function generate(){
         const gridSize = 30;
@@ -386,6 +468,7 @@
         placer.loadDictionary(dictData);
         placer.placeWords();
         placer.drawOnCanvas(els.canvas, {cellSize, fontScale});
+        buildInputs(cellSize);
         printSummary();
         flushLogs();
       }
