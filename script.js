@@ -361,7 +361,7 @@
       // App: integra UI + Canvas + WordPlacer
       // ================================================================
         const els = {
-          canvas: document.getElementById('board'),
+          board: document.getElementById('board'),
           startScreen: document.getElementById('startScreen'),
           startBtn: document.getElementById('startBtn'),
           helpBtn: document.getElementById('helpBtn'),
@@ -372,20 +372,56 @@
       const defaultDict = ["casa","computador","livro","sol","mesa","janela","porta","carro","amigo","floresta","rio","luz","tempo","caminho","sorriso","brasil","noite","tarde","manhã","cidade","praia","montanha","vila","cachorro","gato","festa","musica","vento","chuva","neve"];
   
       let placer = null;
-  
+
+      function renderBoard(placer){
+        if(!placer) return;
+        const boardEl = els.board;
+        const cellSize = 24;
+        boardEl.innerHTML = '';
+        boardEl.style.display = 'grid';
+        boardEl.style.gridTemplateColumns = `repeat(${placer.gridSize}, ${cellSize}px)`;
+        boardEl.style.gridTemplateRows = `repeat(${placer.gridSize}, ${cellSize}px)`;
+        boardEl.style.width = placer.gridSize * cellSize + 'px';
+        boardEl.style.height = boardEl.style.width;
+
+        const orientationMap = {};
+        placer.placed.forEach(p => {
+          p.positions.forEach(pos => {
+            const key = `${pos.row}-${pos.col}`;
+            orientationMap[key] = orientationMap[key]
+              ? orientationMap[key] + ',' + p.orientation
+              : p.orientation;
+          });
+        });
+
+        for(let r = 0; r < placer.grid.length; r++){
+          for(let c = 0; c < placer.grid[r].length; c++){
+            const ch = placer.grid[r][c];
+            if(!ch) continue;
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'cell';
+            input.maxLength = 1;
+            input.style.gridRow = r + 1;
+            input.style.gridColumn = c + 1;
+            const key = `${r}-${c}`;
+            if(orientationMap[key]) input.dataset.orientation = orientationMap[key];
+            boardEl.appendChild(input);
+          }
+        }
+      }
+
       function generate(){
         const gridSize = 30;
         const minWords = 2;
         const maxWords = 5;
-        const cellSize = 24;
-        const fontScale = 70;
         const dictData = defaultDict;
 
         placer = new WordPlacer({gridSize, minWords, maxWords, dictionary: dictData});
         placer.reset();
         placer.loadDictionary(dictData);
         placer.placeWords();
-        placer.drawOnCanvas(els.canvas, {cellSize, fontScale});
+        renderBoard(placer);
         printSummary();
         flushLogs();
       }
