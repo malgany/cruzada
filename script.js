@@ -175,7 +175,48 @@
   
           return this.placed;
         }
-  
+
+        // Verifica se uma palavra pode ser posicionada em (startRow,startCol)
+        // respeitando cruzamentos e mantendo vizinhança vazia
+        isValidPlacement(word, startRow, startCol, orientation){
+          const len = word.length;
+          const positions = [];
+          const posSet = new Set();
+
+          // 1) verificar células alvo
+          for(let i=0;i<len;i++){
+            const r = orientation==='horizontal' ? startRow : startRow + i;
+            const c = orientation==='horizontal' ? startCol + i : startCol;
+            if(r<0 || r>=this.gridSize || c<0 || c>=this.gridSize) return false;
+            positions.push([r,c]);
+            posSet.add(`${r},${c}`);
+            const cell = this.grid[r][c];
+            if(cell && cell !== word[i]) return false;
+          }
+
+          // 2) verificar vizinhança ao redor de cada letra
+          for(let i=0;i<len;i++){
+            const [r,c] = positions[i];
+            const isCross = !!this.grid[r][c];
+            for(let dr=-1; dr<=1; dr++){
+              for(let dc=-1; dc<=1; dc++){
+                if(dr===0 && dc===0) continue;
+                const nr = r + dr;
+                const nc = c + dc;
+                if(nr<0 || nr>=this.gridSize || nc<0 || nc>=this.gridSize) continue;
+                if(posSet.has(`${nr},${nc}`)) continue;
+                if(isCross){
+                  if(orientation==='horizontal' && dc===0 && (dr===1 || dr===-1)) continue;
+                  if(orientation==='vertical' && dr===0 && (dc===1 || dc===-1)) continue;
+                }
+                if(this.grid[nr][nc]) return false;
+              }
+            }
+          }
+
+          return true;
+        }
+
         placeFirstWord(word){
           const W = word;
           const len = W.length;
@@ -196,15 +237,7 @@
             if(startRow < 0 || (startRow + len - 1) >= this.gridSize) return false;
           }
   
-          // verificar conflitos (primeira palavra: apenas verificar bordas)
-          for(let i=0;i<len;i++){
-            const r = ori==='horizontal' ? startRow : startRow + i;
-            const c = ori==='horizontal' ? startCol + i : startCol;
-            const cell = this.grid[r][c];
-            if(cell && cell !== W[i]){
-              return false;
-            }
-          }
+          if(!this.isValidPlacement(W, startRow, startCol, ori)) return false;
           // gravar
           const positions = [];
           for(let i=0;i<len;i++){
@@ -269,16 +302,8 @@
                 if(startRow < 0 || (startRow + cand.length - 1) >= this.gridSize) continue;
               }
   
-              // verificar conflitos: cada célula deve ser null ou a mesma letra
-              let ok = true;
-              for(let i=0;i<cand.length;i++){
-                const r = nextOri==='horizontal' ? startRow : startRow + i;
-                const c = nextOri==='horizontal' ? startCol + i : startCol;
-                const cell = this.grid[r][c];
-                if(cell && cell !== cand[i]){ ok = false; break; }
-              }
-              if(!ok) continue;
-  
+              if(!this.isValidPlacement(cand, startRow, startCol, nextOri)) continue;
+
               // grava
               const positions = [];
               for(let i=0;i<cand.length;i++){
