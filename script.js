@@ -303,110 +303,30 @@
       // ================================================================
       const els = {
         canvas: document.getElementById('board'),
-        gridSize: document.getElementById('gridSize'),
-        minWords: document.getElementById('minWords'),
-        maxWords: document.getElementById('maxWords'),
-        cellSize: document.getElementById('cellSize'),
-        fontScale: document.getElementById('fontScale'),
-        seed: document.getElementById('seed'),
-        dictFile: document.getElementById('dictFile'),
-        dictPaste: document.getElementById('dictPaste'),
-        btnGenerate: document.getElementById('btnGenerate'),
-        btnReset: document.getElementById('btnReset'),
-        logs: document.getElementById('logs'),
-        summary: document.getElementById('summary'),
+        startScreen: document.getElementById('startScreen'),
+        startBtn: document.getElementById('startBtn'),
       };
-      const cfgToggle = document.getElementById('cfgToggle');
-      const configPanel = document.getElementById('configPanel');
   
       const defaultDict = ["casa","computador","livro","sol","mesa","janela","porta","carro","amigo","floresta","rio","luz","tempo","caminho","sorriso","brasil","noite","tarde","manhã","cidade","praia","montanha","vila","cachorro","gato","festa","musica","vento","chuva","neve"];
   
       let placer = null;
   
-      function readUserDictionary(){
-        // Prioridade: textarea > arquivo > default
-        const pasted = els.dictPaste.value.trim();
-        if(pasted){
-          try{
-            const j = JSON.parse(pasted);
-            return Array.isArray(j) ? j : (j && Array.isArray(j.words) ? j.words : defaultDict);
-          }catch(e){
-            alert('JSON inválido no campo de colagem. Usando dicionário padrão.');
-            return defaultDict;
-          }
-        }
-        const file = els.dictFile.files && els.dictFile.files[0];
-        if(file){
-          // Atenção: leitura assíncrona. Aqui retornamos uma Promise que resolve para o array.
-          return new Promise((resolve)=>{
-            const fr = new FileReader();
-            fr.onload = ()=>{
-              try{
-                const j = JSON.parse(fr.result);
-                resolve(Array.isArray(j) ? j : (j && Array.isArray(j.words) ? j.words : defaultDict));
-              }catch(e){ resolve(defaultDict); }
-            };
-            fr.onerror = ()=>resolve(defaultDict);
-            fr.readAsText(file);
-          });
-        }
-        return defaultDict;
-      }
-  
-      function printSummary(placed){
-        if(!placed || !placed.length){ els.summary.innerHTML = '<em>Nenhuma palavra posicionada.</em>'; return; }
-        const items = placed.map((p,i)=>{
-          const span = `<span class="badge">${p.orientation}</span>`;
-          return `<div class="kvs"><div><strong>${i+1}. ${p.word}</strong> ${span}</div><div>(${p.start.row},${p.start.col})</div></div>`;
-        }).join('');
-        els.summary.innerHTML = items;
-      }
-  
-      function flushLogs(){ els.logs.textContent = placer ? placer.logs.join('\n') : ''; }
-  
-      async function generate(){
-        const gridSize = parseInt(els.gridSize.value)||30;
-        const minWords = parseInt(els.minWords.value)||2;
-        const maxWords = parseInt(els.maxWords.value)||5;
-        const cellSize = parseInt(els.cellSize.value)||24;
-        const fontScale = parseInt(els.fontScale.value)||70;
-        const seed = els.seed.value.trim();
-  
-        let dictData = await readUserDictionary();
-        // Caso FileReader retornou Promise
-        if(dictData && typeof dictData.then === 'function'){
-          dictData = await dictData;
-        }
-  
-        placer = new WordPlacer({gridSize, minWords, maxWords, dictionary: dictData, seed});
-        placer.reset();
-        // Normaliza dicionário para uppercase
-        placer.loadDictionary(dictData);
-        // Substitui dicionário por uppercase internamente (feito em getter)
-  
-        const placed = placer.placeWords();
-        placer.drawOnCanvas(els.canvas, {cellSize, fontScale});
-        printSummary(placed);
-        flushLogs();
-      }
-  
-      function resetAll(){
-        if(!placer){
-          const gridSize = parseInt(els.gridSize.value)||30;
-          placer = new WordPlacer({gridSize});
-        }
-        placer.reset();
-        placer.drawOnCanvas(els.canvas, {cellSize: parseInt(els.cellSize.value)||24, fontScale: parseInt(els.fontScale.value)||70});
-        els.summary.innerHTML = '';
-        flushLogs();
-      }
-  
-      // Eventos
-      els.btnGenerate.addEventListener('click', generate);
-      els.btnReset.addEventListener('click', resetAll);
-      cfgToggle.addEventListener('click', () => {
-        configPanel.classList.toggle('open');
-      });
+      function generate(){
+        const gridSize = 30;
+        const minWords = 2;
+        const maxWords = 5;
+        const cellSize = 24;
+        const fontScale = 70;
+        const dictData = defaultDict;
 
-      // Render inicial
-      resetAll();
+        placer = new WordPlacer({gridSize, minWords, maxWords, dictionary: dictData});
+        placer.reset();
+        placer.loadDictionary(dictData);
+        placer.placeWords();
+        placer.drawOnCanvas(els.canvas, {cellSize, fontScale});
+      }
+
+      els.startBtn.addEventListener('click', () => {
+        els.startScreen.classList.add('hidden');
+        generate();
+      });
