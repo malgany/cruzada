@@ -1,65 +1,47 @@
-
 :root{
-    --bg:#0f172a; /* slate-900 */
-    --panel:#111827; /* gray-900 */
-    --ink:#e5e7eb; /* gray-200 */
-    --muted:#9ca3af; /* gray-400 */
-    --accent:#22d3ee; /* cyan-400 */
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0; font-family:system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-    background:linear-gradient(160deg,#0b1026,#0f172a 40%, #0b122f);
-    color:var(--ink);
-    display:flex; flex-direction:column;
-  }
-  header{
-    padding:16px 20px; border-bottom:1px solid #1f2937; position:sticky; top:0; backdrop-filter:saturate(1.1) blur(6px); background:rgba(7,12,30,.6);
-  }
-  h1{margin:0; font-size:18px; letter-spacing:.2px}
-  .wrap{padding:16px;}
-  #configPanel{
-    position:fixed;
-    top:0;
-    left:0;
-    height:100%;
-    width:360px;
-    padding:16px;
-    transform:translateX(-100%);
-    transition:transform .3s ease;
-  }
-  #configPanel.open{transform:translateX(0);}
-  #cfgToggle{
-    position:absolute;
-    top:16px;
-    right:20px;
-    background:none;
-    border:0;
-    font-size:20px;
-    color:var(--ink);
-    cursor:pointer;
-  }
-  .panel{background:rgba(17,24,39,.7); border:1px solid #1f2937; border-radius:16px; padding:14px}
-  .panel h2{margin:0 0 10px 0; font-size:14px; color:var(--muted); font-weight:600; letter-spacing:.3px}
-  .row{display:flex; gap:8px; align-items:center; margin:8px 0}
-  label{font-size:12px; color:var(--muted); min-width:120px}
-  input[type="number"], input[type="text"], textarea, select{
-    width:100%; background:#0b1227; border:1px solid #1f2937; color:var(--ink); padding:8px 10px; border-radius:10px; outline:none;
-  }
-  input[type="file"]{width:100%}
-  button{
-    appearance:none; border:0; background:linear-gradient(135deg,#06b6d4,#22d3ee); color:#001018; font-weight:700; padding:10px 14px; border-radius:12px; cursor:pointer; box-shadow:0 6px 20px rgba(34,211,238,.25);
-  }
-  button.secondary{background:#0b1227; color:var(--ink); border:1px solid #1f2937; box-shadow:none}
-  .grid-wrap{display:flex; gap:16px; height:100%;}
-  canvas{background:#0b1227; border:1px solid #1f2937; border-radius:16px; image-rendering:pixelated;}
-  .log{white-space:pre-wrap; background:#0b1227; border:1px solid #1f2937; border-radius:12px; padding:10px; font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; color:#cbd5e1; font-size:12px;}
-  .list{font-size:12px; color:#cbd5e1}
-  .badge{display:inline-block; padding:2px 8px; border-radius:999px; background:#0b1227; border:1px solid #1f2937; margin-left:6px; color:#93c5fd}
-  .kvs{display:grid; grid-template-columns: 1fr auto; gap:6px}
-  .help{font-size:12px; color:#a5b4fc}
-  .two{display:grid; grid-template-columns:1fr 1fr; gap:8px}
-  .two .row{flex-direction:column; align-items:flex-start}
-  .two .row label{min-width:unset}
-  .two .row input[type="number"]{max-width:100%}
+  --bg:#0f172a;
+  --panel:#111827;
+  --ink:#e5e7eb;
+  --muted:#9ca3af;
+  --accent:#22d3ee;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial,"Apple Color Emoji","Segoe UI Emoji";
+  background:linear-gradient(160deg,#0b1026,#0f172a 40%, #0b122f);
+  color:var(--ink);
+}
+.wrap{padding:16px;}
+.grid-wrap{display:flex; justify-content:center;}
+button{
+  appearance:none;
+  border:0;
+  background:linear-gradient(135deg,#06b6d4,#22d3ee);
+  color:#001018;
+  font-weight:700;
+  padding:10px 14px;
+  border-radius:12px;
+  cursor:pointer;
+  box-shadow:0 6px 20px rgba(34,211,238,.25);
+}
+canvas{
+  background:#0b1227;
+  border:1px solid #1f2937;
+  border-radius:16px;
+  image-rendering:pixelated;
+}
+#startScreen{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--bg);
+  z-index:10;
+}
+#startScreen.hidden{display:none;}
