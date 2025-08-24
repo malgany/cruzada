@@ -9,10 +9,10 @@
 <body>
   <header>
     <h1>Cruzada (30×30) • OnePage com Canvas + <span style="color:var(--accent)">WordPlacer</span></h1>
+    <button id="cfgToggle">⚙️</button>
   </header>
 
-  <div class="wrap">
-    <!-- Painel esquerdo: controles -->
+  <div id="configPanel">
     <section class="panel" id="controls">
       <h2>Configurações</h2>
 
@@ -65,7 +65,9 @@
 
       <div class="row help">Dica: a <strong>primeira palavra</strong> fica com a <em>letra do meio</em> no centro do grid (para pares, usamos o índice <code>Math.floor((len-1)/2)</code>). A orientação alterna entre cada palavra.</div>
     </section>
+  </div>
 
+  <div class="wrap">
     <!-- Painel direito: canvas + logs -->
     <section class="grid-wrap">
       <div class="panel" style="flex:1; display:flex; flex-direction:column; gap:10px;">

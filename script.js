@@ -316,6 +316,8 @@
         logs: document.getElementById('logs'),
         summary: document.getElementById('summary'),
       };
+      const cfgToggle = document.getElementById('cfgToggle');
+      const configPanel = document.getElementById('configPanel');
   
       const defaultDict = ["casa","computador","livro","sol","mesa","janela","porta","carro","amigo","floresta","rio","luz","tempo","caminho","sorriso","brasil","noite","tarde","manhã","cidade","praia","montanha","vila","cachorro","gato","festa","musica","vento","chuva","neve"];
   
@@ -402,6 +404,9 @@
       // Eventos
       els.btnGenerate.addEventListener('click', generate);
       els.btnReset.addEventListener('click', resetAll);
-  
+      cfgToggle.addEventListener('click', () => {
+        configPanel.classList.toggle('open');
+      });
+
       // Render inicial
       resetAll();
