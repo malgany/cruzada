@@ -96,6 +96,30 @@
           const nRange = nMax - nMin + 1;
           return nMin + Math.floor(this.rand()*nRange);
         }
+
+        isCellFree(row, col, expectedChar, ignoreDirs=[]){
+          if(row < 0 || row >= this.gridSize || col < 0 || col >= this.gridSize) return false;
+          const cell = this.grid[row][col];
+          if(expectedChar){
+            if(cell && cell !== expectedChar) return false;
+          }else{
+            if(cell) return false;
+          }
+          const dirs = {
+            up: [-1,0],
+            down: [1,0],
+            left: [0,-1],
+            right: [0,1]
+          };
+          for(const [dir, [dr,dc]] of Object.entries(dirs)){
+            if(ignoreDirs.includes(dir)) continue;
+            const r = row + dr;
+            const c = col + dc;
+            if(r < 0 || r >= this.gridSize || c < 0 || c >= this.gridSize) continue;
+            if(this.grid[r][c]) return false;
+          }
+          return true;
+        }
   
         // desenha linhas e letras
         drawOnCanvas(canvas, opts={}){
@@ -196,14 +220,28 @@
             if(startRow < 0 || (startRow + len - 1) >= this.gridSize) return false;
           }
   
-          // verificar conflitos (primeira palavra: apenas verificar bordas)
+          // verificar conflitos e células vizinhas
           for(let i=0;i<len;i++){
             const r = ori==='horizontal' ? startRow : startRow + i;
             const c = ori==='horizontal' ? startCol + i : startCol;
-            const cell = this.grid[r][c];
-            if(cell && cell !== W[i]){
-              return false;
+            const ignore = [];
+            if(ori==='horizontal'){
+              if(i>0) ignore.push('left');
+              if(i<len-1) ignore.push('right');
+            }else{
+              if(i>0) ignore.push('up');
+              if(i<len-1) ignore.push('down');
             }
+            if(!this.isCellFree(r,c,W[i],ignore)) return false;
+          }
+
+          // células sentinelas antes e depois
+          if(ori==='horizontal'){
+            if(!this.isCellFree(startRow, startCol-1, null, ['right'])) return false;
+            if(!this.isCellFree(startRow, startCol+len, null, ['left'])) return false;
+          }else{
+            if(!this.isCellFree(startRow-1, startCol, null, ['down'])) return false;
+            if(!this.isCellFree(startRow+len, startCol, null, ['up'])) return false;
           }
           // gravar
           const positions = [];
@@ -269,16 +307,37 @@
                 if(startRow < 0 || (startRow + cand.length - 1) >= this.gridSize) continue;
               }
   
-              // verificar conflitos: cada célula deve ser null ou a mesma letra
+              // verificar conflitos: cada célula e vizinhas ortogonais
               let ok = true;
               for(let i=0;i<cand.length;i++){
                 const r = nextOri==='horizontal' ? startRow : startRow + i;
                 const c = nextOri==='horizontal' ? startCol + i : startCol;
-                const cell = this.grid[r][c];
-                if(cell && cell !== cand[i]){ ok = false; break; }
+                const ignore = [];
+                if(nextOri==='horizontal'){
+                  if(i>0) ignore.push('left');
+                  if(i<cand.length-1) ignore.push('right');
+                }else{
+                  if(i>0) ignore.push('up');
+                  if(i<cand.length-1) ignore.push('down');
+                }
+                if(i===j){
+                  if(last.orientation==='horizontal') ignore.push('left','right');
+                  else ignore.push('up','down');
+                }
+                if(!this.isCellFree(r,c,cand[i],ignore)){ ok=false; break; }
               }
               if(!ok) continue;
-  
+
+              // células sentinelas antes e depois
+              if(nextOri==='horizontal'){
+                if(!this.isCellFree(startRow, startCol-1, null, ['right'])) ok=false;
+                if(ok && !this.isCellFree(startRow, startCol+cand.length, null, ['left'])) ok=false;
+              }else{
+                if(!this.isCellFree(startRow-1, startCol, null, ['down'])) ok=false;
+                if(ok && !this.isCellFree(startRow+cand.length, startCol, null, ['up'])) ok=false;
+              }
+              if(!ok) continue;
+
               // grava
               const positions = [];
               for(let i=0;i<cand.length;i++){
