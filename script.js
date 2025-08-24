@@ -301,11 +301,14 @@
       // ================================================================
       // App: integra UI + Canvas + WordPlacer
       // ================================================================
-      const els = {
-        canvas: document.getElementById('board'),
-        startScreen: document.getElementById('startScreen'),
-        startBtn: document.getElementById('startBtn'),
-      };
+        const els = {
+          canvas: document.getElementById('board'),
+          startScreen: document.getElementById('startScreen'),
+          startBtn: document.getElementById('startBtn'),
+          helpBtn: document.getElementById('helpBtn'),
+          helpModal: document.getElementById('helpModal'),
+          helpOverlay: document.getElementById('helpOverlay'),
+        };
   
       const defaultDict = ["casa","computador","livro","sol","mesa","janela","porta","carro","amigo","floresta","rio","luz","tempo","caminho","sorriso","brasil","noite","tarde","manhã","cidade","praia","montanha","vila","cachorro","gato","festa","musica","vento","chuva","neve"];
   
@@ -338,7 +341,17 @@
         console.log(placer.logs.join('\n'));
       }
 
-      els.startBtn.addEventListener('click', () => {
-        els.startScreen.classList.add('hidden');
-        generate();
-      });
+        els.startBtn.addEventListener('click', () => {
+          els.startScreen.classList.add('hidden');
+          generate();
+        });
+
+        els.helpBtn.addEventListener('click', () => {
+          els.helpModal.classList.toggle('hidden');
+          els.helpOverlay.classList.toggle('hidden');
+        });
+
+        els.helpOverlay.addEventListener('click', () => {
+          els.helpModal.classList.add('hidden');
+          els.helpOverlay.classList.add('hidden');
+        });

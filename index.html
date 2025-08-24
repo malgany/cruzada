@@ -7,14 +7,20 @@
   <link rel="stylesheet" href="styles.css">
 </head>
   <body>
-    <div id="startScreen">
-      <button id="startBtn">Iniciar jogo</button>
-    </div>
+  <div id="startScreen">
+    <button id="startBtn">Iniciar jogo</button>
+  </div>
 
-    <div class="wrap">
-      <section class="grid-wrap">
-        <canvas id="board" width="720" height="720"></canvas>
-      </section>
+  <button id="helpBtn">?</button>
+  <div id="helpOverlay" class="hidden"></div>
+  <div id="helpModal" class="hidden">
+    <p>Dica: Clique em "Iniciar jogo" para gerar o tabuleiro.</p>
+  </div>
+
+  <div class="wrap">
+    <section class="grid-wrap">
+      <canvas id="board" width="720" height="720"></canvas>
+    </section>
     </div>
 
     <script src="script.js"></script>
