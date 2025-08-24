@@ -324,6 +324,18 @@
         placer.loadDictionary(dictData);
         placer.placeWords();
         placer.drawOnCanvas(els.canvas, {cellSize, fontScale});
+        printSummary();
+        flushLogs();
+      }
+
+      function printSummary(){
+        if(!placer) return;
+        console.table(placer.placed);
+      }
+
+      function flushLogs(){
+        if(!placer) return;
+        console.log(placer.logs.join('\n'));
       }
 
       els.startBtn.addEventListener('click', () => {
