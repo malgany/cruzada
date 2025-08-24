@@ -41,7 +41,8 @@
           this.gridSize = options.gridSize ?? 30;
           this.center = options.center ?? {row: Math.floor(this.gridSize/2), col: Math.floor(this.gridSize/2)};
           this.minWords = options.minWords ?? 2;
-          this.maxWords = options.maxWords ?? 5;
+          // Permite de 2 a 15 palavras na cruzada por padrão
+          this.maxWords = options.maxWords ?? 15;
           this.maxAttemptsPerWord = options.maxAttemptsPerWord ?? 100;
           this.rawDictionary = options.dictionary ?? [];
           this.seed = options.seed;
@@ -91,7 +92,8 @@
         }
   
         pickN(){
-          const nMin = Math.max(1, this.minWords|0);
+          // Garante pelo menos 2 palavras
+          const nMin = Math.max(2, this.minWords|0);
           const nMax = Math.max(nMin, this.maxWords|0);
           const nRange = nMax - nMin + 1;
           return nMin + Math.floor(this.rand()*nRange);
@@ -342,7 +344,8 @@
       function generate(){
         const gridSize = 30;
         const minWords = 2;
-        const maxWords = 5;
+        // Garante que ao menos 2 e no máximo 15 palavras sejam usadas
+        const maxWords = 15;
         const cellSize = 24;
         const fontScale = 70;
         const dictData = defaultDict;
