@@ -58,5 +58,6 @@
   .list{font-size:12px; color:#cbd5e1}
   .badge{display:inline-block; padding:2px 8px; border-radius:999px; background:#0b1227; border:1px solid #1f2937; margin-left:6px; color:#93c5fd}
   .kvs{display:grid; grid-template-columns: 1fr auto; gap:6px}
-  .help{font-size:12px; color:#a5b4fc}
-  .two{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+    .help{font-size:12px; color:#a5b4fc; white-space:normal; line-height:1.4; margin-top:8px}
+    @media (max-width:768px){.help{max-width:320px; overflow-wrap:anywhere}}
+    .two{display:grid; grid-template-columns:1fr 1fr; gap:8px}
