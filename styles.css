@@ -123,3 +123,14 @@ canvas{
   width:320px;
   z-index:40;
 }
+
+#lives{
+  position:fixed;
+  top:10px;
+  right:60px;
+  z-index:20;
+}
+
+#lifeCount{
+  color:red;
+}

@@ -368,13 +368,25 @@
           helpBtn: document.getElementById('helpBtn'),
           helpModal: document.getElementById('helpModal'),
           helpOverlay: document.getElementById('helpOverlay'),
+          lifeCount: document.getElementById('lifeCount'),
         };
   
       const defaultDict = ["casa","computador","livro","sol","mesa","janela","porta","carro","amigo","floresta","rio","luz","tempo","caminho","sorriso","brasil","noite","tarde","manhã","cidade","praia","montanha","vila","cachorro","gato","festa","musica","vento","chuva","neve"];
   
       let placer = null;
+      let lives = 5;
 
       let activeOrientation = 'horizontal';
+
+      function loseLife(){
+        lives--;
+        els.lifeCount.textContent = lives;
+        if(lives <= 0){
+          const disabled = els.gridInputs.querySelectorAll('input, button');
+          disabled.forEach(el => el.disabled = true);
+          alert('Fim de jogo!');
+        }
+      }
 
       function moveFocus(current, forward=true){
         const r = parseInt(current.dataset.row, 10);
@@ -433,6 +445,8 @@
 
         if(wordObj.inputs.every(inp => inp.classList.contains('correct'))){
           wordObj.checkBtn.disabled = true;
+        } else {
+          loseLife();
         }
       }
 
@@ -530,6 +544,9 @@
         const cellSize = 24;
         const fontScale = 70;
         const dictData = defaultDict;
+
+        lives = 5;
+        els.lifeCount.textContent = lives;
 
         placer = new WordPlacer({gridSize, minWords, maxWords, dictionary: dictData});
         placer.reset();
