@@ -125,6 +125,7 @@
         drawOnCanvas(canvas, opts={}){
           const cellSize = opts.cellSize ?? 24;
           const fontScale = Math.max(40, Math.min(100, (opts.fontScale ?? 70))) / 100; // 0.4..1.0
+          const showLetters = opts.showLetters ?? false;
           canvas.width = this.gridSize * cellSize;
           canvas.height = this.gridSize * cellSize;
           const ctx = canvas.getContext('2d');
@@ -153,7 +154,9 @@
               if(ch){
                 const x = c*cellSize + cellSize/2;
                 const y = r*cellSize + cellSize/2;
-                ctx.fillText(ch, x, y);
+                if (showLetters) {
+                  ctx.fillText(ch, x, y);
+                }
               }
             }
           }
@@ -582,7 +585,7 @@
         placer.reset();
         placer.loadDictionary(dictData);
         placer.placeWords();
-        placer.drawOnCanvas(els.canvas, {cellSize, fontScale});
+        placer.drawOnCanvas(els.canvas, {cellSize, fontScale, showLetters:false});
         createInputs(placer);
         printSummary();
         flushLogs();
