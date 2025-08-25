@@ -369,6 +369,10 @@
           helpModal: document.getElementById('helpModal'),
           helpOverlay: document.getElementById('helpOverlay'),
           lifeCount: document.getElementById('lifeCount'),
+          msgOverlay: document.getElementById('msgOverlay'),
+          msgModal: document.getElementById('msgModal'),
+          msgText: document.getElementById('msgText'),
+          restartBtn: document.getElementById('restartBtn'),
         };
   
       const defaultDict = ["casa","computador","livro","sol","mesa","janela","porta","carro","amigo","floresta","rio","luz","tempo","caminho","sorriso","brasil","noite","tarde","manhã","cidade","praia","montanha","vila","cachorro","gato","festa","musica","vento","chuva","neve"];
@@ -378,13 +382,30 @@
 
       let activeOrientation = 'horizontal';
 
+      function hideMessage(){
+        els.msgOverlay.classList.add('hidden');
+        els.msgModal.classList.add('hidden');
+        els.restartBtn.classList.add('hidden');
+      }
+
+      function showMessage(text, showRestart = false){
+        els.msgText.textContent = text;
+        els.msgOverlay.classList.remove('hidden');
+        els.msgModal.classList.remove('hidden');
+        const disabled = els.gridInputs.querySelectorAll('input, button');
+        disabled.forEach(el => el.disabled = true);
+        if(showRestart){
+          els.restartBtn.classList.remove('hidden');
+        }else{
+          els.restartBtn.classList.add('hidden');
+        }
+      }
+
       function loseLife(){
         lives--;
         els.lifeCount.textContent = lives;
         if(lives <= 0){
-          const disabled = els.gridInputs.querySelectorAll('input, button');
-          disabled.forEach(el => el.disabled = true);
-          alert('Fim de jogo!');
+          showMessage('Fim de jogo!', true);
         }
       }
 
@@ -447,6 +468,13 @@
           wordObj.checkBtn.disabled = true;
         } else {
           loseLife();
+        }
+        checkVictory();
+      }
+
+      function checkVictory(){
+        if(placer && placer.placed.every(p => p.inputs && p.inputs.every(inp => inp.classList.contains('correct')))){
+          showMessage('Você venceu!', true);
         }
       }
 
@@ -547,6 +575,8 @@
 
         lives = 5;
         els.lifeCount.textContent = lives;
+        hideMessage();
+        els.restartBtn.classList.add('hidden');
 
         placer = new WordPlacer({gridSize, minWords, maxWords, dictionary: dictData});
         placer.reset();
@@ -580,5 +610,10 @@
 
         els.helpOverlay.addEventListener('click', () => {
           els.helpModal.classList.add('hidden');
-          els.helpOverlay.classList.add('hidden');
-        });
+        els.helpOverlay.classList.add('hidden');
+      });
+
+      els.restartBtn.addEventListener('click', () => {
+        hideMessage();
+        generate();
+      });

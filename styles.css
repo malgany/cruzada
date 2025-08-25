@@ -134,3 +134,29 @@ canvas{
 #lifeCount{
   color:red;
 }
+
+#msgOverlay{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,.6);
+  z-index:50;
+}
+
+#msgModal{
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  background:var(--panel);
+  padding:20px;
+  border-radius:12px;
+  max-width:90%;
+  width:320px;
+  text-align:center;
+  z-index:60;
+}
+
+#msgModal button{margin-top:10px;}
