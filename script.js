@@ -361,7 +361,8 @@
       // App: integra UI + Canvas + WordPlacer
       // ================================================================
         const els = {
-          board: document.getElementById('board'),
+          canvas: document.getElementById('board'),
+          gridInputs: document.getElementById('gridInputs'),
           startScreen: document.getElementById('startScreen'),
           startBtn: document.getElementById('startBtn'),
           helpBtn: document.getElementById('helpBtn'),
@@ -373,55 +374,96 @@
   
       let placer = null;
 
-      function renderBoard(placer){
-        if(!placer) return;
-        const boardEl = els.board;
-        const cellSize = 24;
-        boardEl.innerHTML = '';
-        boardEl.style.display = 'grid';
-        boardEl.style.gridTemplateColumns = `repeat(${placer.gridSize}, ${cellSize}px)`;
-        boardEl.style.gridTemplateRows = `repeat(${placer.gridSize}, ${cellSize}px)`;
-        boardEl.style.width = placer.gridSize * cellSize + 'px';
-        boardEl.style.height = boardEl.style.width;
+      let activeOrientation = 'horizontal';
 
-        const orientationMap = {};
+      function moveFocus(current, forward=true){
+        const r = parseInt(current.dataset.row, 10);
+        const c = parseInt(current.dataset.col, 10);
+        let target;
+        if(activeOrientation === 'horizontal'){
+          const col = c + (forward ? 1 : -1);
+          target = els.gridInputs.querySelector(`input[data-row="${r}"][data-col="${col}"]`);
+        } else {
+          const row = r + (forward ? 1 : -1);
+          target = els.gridInputs.querySelector(`input[data-row="${row}"][data-col="${c}"]`);
+        }
+        if(target) target.focus();
+      }
+
+      function createInputs(placer){
+        if(!placer) return;
+        const cellSize = 24;
+        els.gridInputs.innerHTML = '';
+        els.gridInputs.style.width = placer.gridSize * cellSize + 'px';
+        els.gridInputs.style.height = els.gridInputs.style.width;
+        els.gridInputs.style.setProperty('--cell-size', cellSize + 'px');
+
+        const cells = new Map();
         placer.placed.forEach(p => {
-          p.positions.forEach(pos => {
+          p.positions.forEach((pos, idx) => {
             const key = `${pos.row}-${pos.col}`;
-            orientationMap[key] = orientationMap[key]
-              ? orientationMap[key] + ',' + p.orientation
-              : p.orientation;
+            let input = cells.get(key);
+            if(!input){
+              input = document.createElement('input');
+              input.type = 'text';
+              input.maxLength = 1;
+              input.className = 'cell-input';
+              input.dataset.row = pos.row;
+              input.dataset.col = pos.col;
+              input.style.top = pos.row * cellSize + 'px';
+              input.style.left = pos.col * cellSize + 'px';
+              els.gridInputs.appendChild(input);
+              cells.set(key, input);
+
+              input.addEventListener('focus', () => {
+                const ori = input.dataset.orientation || '';
+                const opts = ori.split(',');
+                if(!opts.includes(activeOrientation)){
+                  activeOrientation = opts[0] || 'horizontal';
+                }
+              });
+
+              input.addEventListener('input', (e) => {
+                let val = input.value.toUpperCase().replace(/[^A-Z]/g, '');
+                input.value = val;
+                if(val) moveFocus(input, true);
+              });
+
+              input.addEventListener('keydown', (e) => {
+                if(e.key === 'Backspace' && input.value === ''){
+                  e.preventDefault();
+                  moveFocus(input, false);
+                  return;
+                }
+                if(e.key.length === 1 && !/[a-zA-Z]/.test(e.key)){
+                  e.preventDefault();
+                }
+              });
+            }
+
+            const ori = input.dataset.orientation ? input.dataset.orientation.split(',') : [];
+            if(!ori.includes(p.orientation)){
+              ori.push(p.orientation);
+              input.dataset.orientation = ori.join(',');
+            }
           });
         });
-
-        for(let r = 0; r < placer.grid.length; r++){
-          for(let c = 0; c < placer.grid[r].length; c++){
-            const ch = placer.grid[r][c];
-            if(!ch) continue;
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.className = 'cell';
-            input.maxLength = 1;
-            input.style.gridRow = r + 1;
-            input.style.gridColumn = c + 1;
-            const key = `${r}-${c}`;
-            if(orientationMap[key]) input.dataset.orientation = orientationMap[key];
-            boardEl.appendChild(input);
-          }
-        }
       }
 
       function generate(){
         const gridSize = 30;
         const minWords = 2;
         const maxWords = 5;
+        const cellSize = 24;
+        const fontScale = 70;
         const dictData = defaultDict;
 
         placer = new WordPlacer({gridSize, minWords, maxWords, dictionary: dictData});
         placer.reset();
         placer.loadDictionary(dictData);
         placer.placeWords();
-        renderBoard(placer);
+        placer.drawOnCanvas(els.canvas, {cellSize, fontScale});
+        createInputs(placer);
         printSummary();
         flushLogs();
       }
