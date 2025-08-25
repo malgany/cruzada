@@ -432,8 +432,16 @@
 
       function handleKeyClick(e){
         const key = e.currentTarget.dataset.key;
-        const active = document.activeElement;
-        if(!active || !active.classList.contains('cell-input')) return;
+        let active = document.activeElement;
+        if(!active || !active.classList.contains('cell-input')){
+          const first = els.gridInputs.querySelector('.cell-input');
+          if(first){
+            first.focus();
+            active = first;
+          } else {
+            return;
+          }
+        }
 
         if(key === 'BACKSPACE'){
           if(active.value !== ''){
