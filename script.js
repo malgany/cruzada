@@ -134,14 +134,7 @@
           ctx.fillStyle = '#0b1227';
           ctx.fillRect(0,0,canvas.width, canvas.height);
   
-          // Linhas
-          ctx.strokeStyle = '#1f2937';
-          ctx.lineWidth = 1;
-          for(let i=0;i<=this.gridSize;i++){
-            const p = i*cellSize + .5;
-            ctx.beginPath(); ctx.moveTo(.5, p); ctx.lineTo(canvas.width-.5, p); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(p, .5); ctx.lineTo(p, canvas.height-.5); ctx.stroke();
-          }
+          // Linhas removidas para esconder o grid
   
           // Letras
           ctx.fillStyle = '#e5e7eb';
