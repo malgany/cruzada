@@ -159,4 +159,33 @@ canvas{
   z-index:60;
 }
 
-#msgModal button{margin-top:10px;}
+  #msgModal button{margin-top:10px;}
+
+  /* Keyboard */
+  #keyboard{
+    margin-top:16px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    align-items:center;
+  }
+  .kb-row{
+    display:flex;
+    gap:6px;
+    justify-content:center;
+  }
+  .kb-key{
+    background:#374151;
+    color:var(--ink);
+    border:1px solid #1f2937;
+    border-radius:4px;
+    padding:10px 8px;
+    font-weight:700;
+    text-transform:uppercase;
+    cursor:pointer;
+    min-width:32px;
+  }
+  .kb-key[data-key="ENTER"],
+  .kb-key[data-key="BACKSPACE"]{
+    min-width:64px;
+  }

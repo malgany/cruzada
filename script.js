@@ -359,6 +359,7 @@
         const els = {
           canvas: document.getElementById('board'),
           gridInputs: document.getElementById('gridInputs'),
+          keyboard: document.getElementById('keyboard'),
           startScreen: document.getElementById('startScreen'),
           startBtn: document.getElementById('startBtn'),
           helpBtn: document.getElementById('helpBtn'),
@@ -388,6 +389,7 @@
         els.msgText.textContent = text;
         els.msgOverlay.classList.remove('hidden');
         els.msgModal.classList.remove('hidden');
+        els.keyboard.classList.add('hidden');
         const disabled = els.gridInputs.querySelectorAll('input, button');
         disabled.forEach(el => el.disabled = true);
         if(showRestart){
@@ -426,6 +428,74 @@
         } else {
           wordObj.checkBtn.classList.add('hidden');
         }
+      }
+
+      function handleKeyClick(e){
+        const key = e.currentTarget.dataset.key;
+        const active = document.activeElement;
+        if(!active || !active.classList.contains('cell-input')) return;
+
+        if(key === 'BACKSPACE'){
+          if(active.value !== ''){
+            active.value = '';
+            active.dispatchEvent(new Event('input'));
+          } else {
+            moveFocus(active, false);
+            const prev = document.activeElement;
+            if(prev && prev.classList.contains('cell-input')){
+              prev.value = '';
+              prev.dispatchEvent(new Event('input'));
+            }
+          }
+          return;
+        }
+
+        if(key === 'ENTER'){
+          const wordObj = active.wordRefs && active.wordRefs[0];
+          if(wordObj) checkWord(wordObj);
+          return;
+        }
+
+        if(key.length === 1){
+          active.value = key;
+          active.dispatchEvent(new Event('input'));
+          moveFocus(active, true);
+        }
+      }
+
+      function buildKeyboard(){
+        const rows = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"];
+        els.keyboard.innerHTML = '';
+        rows.forEach((rowStr, idx) => {
+          const row = document.createElement('div');
+          row.className = 'kb-row';
+          for(const ch of rowStr){
+            const btn = document.createElement('button');
+            btn.className = 'kb-key';
+            btn.textContent = ch;
+            btn.dataset.key = ch;
+            row.appendChild(btn);
+          }
+          if(idx === 1){
+            const back = document.createElement('button');
+            back.className = 'kb-key';
+            back.textContent = '⌫';
+            back.dataset.key = 'BACKSPACE';
+            row.appendChild(back);
+          }
+          if(idx === 2){
+            const enter = document.createElement('button');
+            enter.className = 'kb-key';
+            enter.textContent = 'ENTER';
+            enter.dataset.key = 'ENTER';
+            row.appendChild(enter);
+          }
+          els.keyboard.appendChild(row);
+        });
+        els.keyboard.querySelectorAll('.kb-key').forEach(btn => {
+          btn.addEventListener('click', handleKeyClick);
+        });
+        els.keyboard.classList.remove('hidden');
       }
 
       function checkWord(wordObj){
@@ -509,16 +579,16 @@
                 }
               });
 
-              input.addEventListener('input', () => {
-                let val = input.value.toUpperCase().replace(/[^A-Z]/g, '');
-                input.value = val;
-                input.classList.remove('correct','present','absent');
-                input.wordRefs.forEach(w => {
-                  w.checkBtn.disabled = false;
-                  updateCheckButton(w);
+                input.addEventListener('input', (e) => {
+                  let val = input.value.toUpperCase().replace(/[^A-Z]/g, '');
+                  input.value = val;
+                  input.classList.remove('correct','present','absent');
+                  input.wordRefs.forEach(w => {
+                    w.checkBtn.disabled = false;
+                    updateCheckButton(w);
+                  });
+                  if(val && e.isTrusted) moveFocus(input, true);
                 });
-                if(val) moveFocus(input, true);
-              });
 
               input.addEventListener('keydown', (e) => {
                 if(e.key === 'Backspace' && input.value === ''){
@@ -580,6 +650,7 @@
         placer.placeWords();
         placer.drawOnCanvas(els.canvas, {cellSize, fontScale, showLetters:false});
         createInputs(placer);
+        buildKeyboard();
         printSummary();
         flushLogs();
       }
