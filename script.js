@@ -651,6 +651,11 @@
         placer.drawOnCanvas(els.canvas, {cellSize, fontScale, showLetters:false});
         createInputs(placer);
         buildKeyboard();
+        const firstInput = els.gridInputs.querySelector('.cell-input');
+        if(firstInput){
+          firstInput.focus();
+          activeOrientation = (firstInput.dataset.orientation || '').split(',')[0] || 'horizontal';
+        }
         printSummary();
         flushLogs();
       }
