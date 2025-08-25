@@ -390,6 +390,52 @@
         if(target) target.focus();
       }
 
+      function updateCheckButton(wordObj){
+        const allFilled = wordObj.inputs.every(inp => inp.value.trim() !== '');
+        if(allFilled){
+          wordObj.checkBtn.classList.remove('hidden');
+        } else {
+          wordObj.checkBtn.classList.add('hidden');
+        }
+      }
+
+      function checkWord(wordObj){
+        if(wordObj.inputs.every(inp => inp.classList.contains('correct'))){
+          return;
+        }
+
+        const guess = wordObj.inputs.map(i => i.value.toUpperCase());
+        const target = wordObj.word.split('');
+
+        wordObj.inputs.forEach(inp => inp.classList.remove('correct','present','absent'));
+
+        const counts = {};
+        target.forEach(ch => counts[ch] = (counts[ch] || 0) + 1);
+
+        wordObj.inputs.forEach((inp, idx) => {
+          const letter = guess[idx];
+          if(letter === target[idx]){
+            inp.classList.add('correct');
+            counts[letter]--;
+          }
+        });
+
+        wordObj.inputs.forEach((inp, idx) => {
+          const letter = guess[idx];
+          if(inp.classList.contains('correct')) return;
+          if(target.includes(letter) && counts[letter] > 0){
+            inp.classList.add('present');
+            counts[letter]--;
+          } else {
+            inp.classList.add('absent');
+          }
+        });
+
+        if(wordObj.inputs.every(inp => inp.classList.contains('correct'))){
+          wordObj.checkBtn.disabled = true;
+        }
+      }
+
       function createInputs(placer){
         if(!placer) return;
         const cellSize = 24;
@@ -400,7 +446,8 @@
 
         const cells = new Map();
         placer.placed.forEach(p => {
-          p.positions.forEach((pos, idx) => {
+          const wordInputs = [];
+          p.positions.forEach((pos) => {
             const key = `${pos.row}-${pos.col}`;
             let input = cells.get(key);
             if(!input){
@@ -412,6 +459,7 @@
               input.dataset.col = pos.col;
               input.style.top = pos.row * cellSize + 'px';
               input.style.left = pos.col * cellSize + 'px';
+              input.wordRefs = [];
               els.gridInputs.appendChild(input);
               cells.set(key, input);
 
@@ -423,9 +471,14 @@
                 }
               });
 
-              input.addEventListener('input', (e) => {
+              input.addEventListener('input', () => {
                 let val = input.value.toUpperCase().replace(/[^A-Z]/g, '');
                 input.value = val;
+                input.classList.remove('correct','present','absent');
+                input.wordRefs.forEach(w => {
+                  w.checkBtn.disabled = false;
+                  updateCheckButton(w);
+                });
                 if(val) moveFocus(input, true);
               });
 
@@ -446,7 +499,27 @@
               ori.push(p.orientation);
               input.dataset.orientation = ori.join(',');
             }
+            input.wordRefs.push(p);
+            wordInputs.push(input);
           });
+          p.inputs = wordInputs;
+
+          const last = p.positions[p.positions.length - 1];
+          const btn = document.createElement('button');
+          btn.textContent = '✔';
+          btn.className = 'check-btn hidden';
+          btn.style.position = 'absolute';
+          if(p.orientation === 'horizontal'){
+            btn.style.top = last.row * cellSize + 'px';
+            btn.style.left = (last.col + 1) * cellSize + 'px';
+          }else{
+            btn.style.top = (last.row + 1) * cellSize + 'px';
+            btn.style.left = last.col * cellSize + 'px';
+          }
+          btn.addEventListener('click', () => checkWord(p));
+          els.gridInputs.appendChild(btn);
+          p.checkBtn = btn;
+          updateCheckButton(p);
         });
       }
 

@@ -50,6 +50,29 @@ canvas{
   font-size:16px;
   text-transform:uppercase;
 }
+
+.check-btn{
+  position:absolute;
+  width:var(--cell-size);
+  height:var(--cell-size);
+  padding:0;
+  font-size:16px;
+}
+
+.cell-input.correct{
+  background:#16a34a;
+  color:#fff;
+}
+
+.cell-input.present{
+  background:#facc15;
+  color:#000;
+}
+
+.cell-input.absent{
+  background:#374151;
+  color:#fff;
+}
 #startScreen{
   position:fixed;
   top:0;
